@@ -1,0 +1,16 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx-ingress
+    nginx.org/client-max-body-size: '1G'
+  name: cafe-ingress
+spec:
+  rules:
+  - host: test.example.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: zero-downtime
+          servicePort: 9090

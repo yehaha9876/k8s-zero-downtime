@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zero-downtime
+  namespace: zero-downtime
+spec:
+  replicas: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 2
+  selector:
+    matchLabels:
+      app: zero-downtime
+  template:
+    metadata:
+      labels:
+        app: zero-downtime
+    spec:
+      containers:
+      - image: harbor.gzky.com/zero-downtime/web:latest
+        imagePullPolicy: Always
+        name: zero-downtime
+        lifecycle:
+          preStop:
+            exec:
+              command: ["sh", "-c", "sleep 1"]
+        ports:
+        - name: http
+          containerPort: 9090
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 9090
+          initialDelaySeconds: 10
+          periodSeconds: 2
